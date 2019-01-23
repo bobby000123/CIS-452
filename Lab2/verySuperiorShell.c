@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
 		//Get user input, see if user quit
 		input = (char*)malloc(64);
-		printf("shell:> ");
+		printf("Very superior shell, I don't know why you'd use any other shell really this is just the best one around oh right you have to enter a command here go ahead:> ");
 
 		if(!fgets(input, MAX, stdin))
 			break;
