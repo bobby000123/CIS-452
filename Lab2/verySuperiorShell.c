@@ -48,6 +48,8 @@ int main(int argc, char** argv) {
 		}
 		else {
 			struct rusage buf;
+
+			//Need to use wait, not waitpid; causes issues with child
 			wait(NULL);
 
 			//Used to get resource usage statistics for a program
