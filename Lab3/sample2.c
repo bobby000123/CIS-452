@@ -16,7 +16,7 @@
  *
  * Parent will fork to child, then continue running.
  * Closing FD after using dup2 will replace STDIN/OUT with whatever FD pipe created,
- * which redirects the stream to our process. This is basically a really fancy print?
+ * which redirects the stream to our process. This is basically a fancy looking print?
  */
 int main() 
 { 
@@ -47,7 +47,7 @@ int main()
 		close (fd[READ]); 
 		close (fd[WRITE]); 
 		// point D 
-		// This will write to a file, which just so happens to be STDOUT_FILENO
+		// This will write to a file, which just so happens to be STDOUT_FILENO, which was replaced with fd[WRITE]
 		// Basically a fancy print statement
 		fgets (str, MAX, stdin); 
 		write (STDOUT_FILENO, (const void* ) str, (size_t) strlen (str) + 1); 
@@ -61,7 +61,7 @@ int main()
 	close (fd[READ]); 
 	close (fd[WRITE]); 
 	// point D 
-	// Read from some file, which just so happens to be STDIN.
+	// Read from some file, which just so happens to be STDIN, which was replaced with fd[READ]
 	num = read (STDIN_FILENO, (void* ) str, (size_t)  sizeof (str)); 
 	if (num > MAX) {
 		perror ("pipe read error\n");
