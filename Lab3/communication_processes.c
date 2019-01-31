@@ -9,7 +9,9 @@ void sigHandler(int);
 /*
  * Note: parent will be the only one to receive SIGUSR1/2, but
  * parent AND child receive interrupt, so it prints twice. 
- * Way around this is signal (SIGINT, SIG_IGN).
+ * Way around this is signal (SIGINT, SIG_IGN). However, this means
+ * that the only way I know of to kill children is to use global
+ * variables for the PID, and do so from the sighandler. Which is better?
  */
 int main()
 {
@@ -25,12 +27,14 @@ int main()
 	}
 
 	if (child == 0) { 
-		signal(SIGINT, SIG_IGN);
+//		signal(SIGINT, SIG_IGN);
 		int randomTime;
 		while (1)
 		{
-			randomTime = rand() % 2 + 1; //wait 1 or 2 seconds.
+			randomTime = rand() % 5 + 1; //wait 1-5 seconds.
 			sleep(randomTime);
+
+			randomTime = rand() % 2 + 1; 
 			if (randomTime == 1)
 				kill(parent, SIGUSR1);
 			else
@@ -52,7 +56,7 @@ int main()
 		/* Because the child is ignoring the SIGINT signal, we have to
 		 * manually send a SIGTERM to the child process.
 		 */
-		kill(child, SIGTERM);
+//		kill(child, SIGTERM);
 	}
 	return 1;
 }
