@@ -5,15 +5,19 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <string.h>
+#include <signal.h>
 
 #define FOO 4096
 #define SIZE 1024
 
+char* shmPtr, *data;
+int shmId;
+void sigHandler(int);
 int main ()
 {
-	int shmId;
 	int loopFlag = 1;
-	char *shmPtr, *data = (char*)malloc(SIZE);
+	data = (char*)malloc(SIZE);
+	signal(SIGINT, sigHandler);
 
 	key_t key = ftok("shmfile",65);
 	printf("made it past here\n");
@@ -49,3 +53,18 @@ int main ()
 	free(data);
 	return 0;
 } 
+
+void sigHandler(int sigNum)
+{
+	printf("User exiting\n");
+	if (shmdt (shmPtr) < 0) {
+
+		perror ("just can't let go\n");
+		exit (1);
+	}
+	if (shmctl (shmId, IPC_RMID, 0) < 0) {
+		perror ("can't deallocate\n");
+		exit(1);
+	}
+	free(data);
+}
