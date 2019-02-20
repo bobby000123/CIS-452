@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -36,9 +37,11 @@ int main ()
 		printf ("Please input your word: ");
 		scanf ("%s", data);
 		strcpy(shmPtr, data);
-		shmPtr[SIZE] = '1';
-
+		shmPtr[SIZE] = '1'; // lock: 1 = available, 0 = not
+		shmPtr[SIZE + sizeof(int)] = 0; // how many readers have accessed data
 		printf("Word is in shared memory. Please wait . . .\n"); 
+		while (shmPtr[SIZE + sizeof(int)] != 2);
+		shmPtr[SIZE + sizeof(int)] = 0;
 	}
 
 	if (shmdt (shmPtr) < 0) {
@@ -56,15 +59,14 @@ int main ()
 
 void sigHandler(int sigNum)
 {
-	printf("User exiting\n");
+	printf("\n\nUser exiting.\n");
 	if (shmdt (shmPtr) < 0) {
 
-		perror ("just can't let go\n");
 		exit (1);
 	}
 	if (shmctl (shmId, IPC_RMID, 0) < 0) {
-		perror ("can't deallocate\n");
 		exit(1);
 	}
 	free(data);
+	exit(0);
 }

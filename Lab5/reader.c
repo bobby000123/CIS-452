@@ -12,8 +12,7 @@
 
 int main ()
 {
-	int shmId;
-	int loopFlag = 1;
+	int count, shmId, loopFlag = -1;
 	char *shmPtr = (char*)malloc(SIZE), *data = (char*)malloc(SIZE);
 
 
@@ -23,23 +22,34 @@ int main ()
 		perror("could not get");
 		exit(1);
 	}
-
 	if ((shmPtr = shmat (shmId, 0, 0)) == (void*) -1) {
 		perror ("can't attach\n");
 		exit (1);
 	}
+	
+	while (loopFlag)
+	{
+		//wait for value to be available
+		//wait for lock to be 0
+		//set lock to 0
+		//read value
+		//increment count
+		//set lock to 1
+		//while word hasn't changed, sleep
+		while (shmPtr[SIZE] == 0);
 
-	//	while (loopFlag)
-	//	{
-	while (!(shmPtr[1] == '1'))
-		usleep(100000);
+		while (strcmp(data, shmPtr) == 0)
+			strcpy(data, shmPtr);
 
-	printf("Got here\n");
-	shmPtr[1] = 1;
-	printf("Getting word\n");
-	strcpy(data, shmPtr);
-	printf("Word is %s\n", data); 
-	shmPtr[1] = '0';
+		shmPtr[SIZE] = 1;
+		count = (int)*(shmPtr + SIZE + sizeof(int)) + 1;
+
+		shmPtr[SIZE + sizeof(int)] = count;
+		shmPtr[SIZE] = 0;
+		strcpy(data, shmPtr);
+		printf("word is %s\n", data);
+	}
+//	printf("What the heck goes here %s\n", shmPtr + SIZE); 
 
 	//	}
 
