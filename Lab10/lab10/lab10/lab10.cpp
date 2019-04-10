@@ -12,9 +12,9 @@ int main()
 	SYSTEM_INFO info;
 	MEMORY_BASIC_INFORMATION mbi;
 	GetSystemInfo(&info);
-	int query_return = VirtualQuery(data, &mbi, sizeof(mbi));
 
 	void* data = malloc(600000 * sizeof(char)); //over 1MB, just to make sure allocation works.
+	int query_return = VirtualQuery(data, &mbi, sizeof(mbi));
 	std::string state = "";
 
 	if (mbi.State == 4096)
